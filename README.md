@@ -65,19 +65,19 @@ components.
 
 | | Component | What it does |
 |:--:|---|---|
-| <img src="Editor/Icons/comp-spline-computer.png" width="26"> | **Spline Computer** | Owns the splines, junctions and caches. Everything else reads from it. |
-| <img src="Editor/Icons/comp-path-gen.png" width="26"> | **Path Generator** | A flat ribbon along the spline. Roads, tracks, walkways, with an optional shaped cross-section for gutters and camber. |
-| <img src="Editor/Icons/comp-tube-gen.png" width="26"> | **Tube Generator** | A tube, pipe or cable. Revolve it less than a full turn for a trough or half-pipe. |
-| <img src="Editor/Icons/comp-surface-gen.png" width="26"> | **Surface Generator** | Fills the area inside a closed spline. Lakes, plazas, platforms, extruded into solids. |
-| <img src="Editor/Icons/comp-spline-mesh.png" width="26"> | **Spline Mesh** | Repeats *your* meshes along the spline, bent to the curve or placed as props. Layer channels to build a fence out of rails and posts at once. |
-| <img src="Editor/Icons/comp-follower.png" width="26"> | **Spline Follower** | Moves an object along the spline at a real-world speed, with speed regions and branch switching at junctions. |
-| <img src="Editor/Icons/comp-positioner.png" width="26"> | **Spline Positioner** | Pins an object to a fixed point on the spline. |
-| <img src="Editor/Icons/comp-projector.png" width="26"> | **Spline Projector** | Snaps an object to the nearest point on the spline, and reports how far along it is. |
-| <img src="Editor/Icons/comp-trigger.png" width="26"> | **Spline Trigger** | Fires events when a follower passes a point. Checkpoints, laps, gates. |
-| <img src="Editor/Icons/comp-object-controller.png" width="26"> | **Object Controller** | Scatters prefabs along the spline, with seeded randomness so the layout is reproducible. |
-| <img src="Editor/Icons/comp-box-collider-gen.png" width="26"> | **Box Collider Generator** | A chain of box colliders along the spline. Cheaper than a mesh collider. |
-| <img src="Editor/Icons/comp-edge-collider-gen.png" width="26"> | **Edge Collider 2D Generator** | Physics for 2D ground and rails. |
-| <img src="Editor/Icons/comp-length-calculator.png" width="26"> | **Length Calculator** | Measures the spline and raises events when its length crosses a threshold. |
+| <img src=".github/images/components/comp-spline-computer.png" width="44"> | **Spline Computer** | Owns the splines, junctions and caches. Everything else reads from it. |
+| <img src=".github/images/components/comp-path-gen.png" width="44"> | **Path Generator** | A flat ribbon along the spline. Roads, tracks, walkways, with an optional shaped cross-section for gutters and camber. |
+| <img src=".github/images/components/comp-tube-gen.png" width="44"> | **Tube Generator** | A tube, pipe or cable. Revolve it less than a full turn for a trough or half-pipe. |
+| <img src=".github/images/components/comp-surface-gen.png" width="44"> | **Surface Generator** | Fills the area inside a closed spline. Lakes, plazas, platforms, extruded into solids. |
+| <img src=".github/images/components/comp-spline-mesh.png" width="44"> | **Spline Mesh** | Repeats *your* meshes along the spline, bent to the curve or placed as props. Layer channels to build a fence out of rails and posts at once. |
+| <img src=".github/images/components/comp-follower.png" width="44"> | **Spline Follower** | Moves an object along the spline at a real-world speed, with speed regions and branch switching at junctions. |
+| <img src=".github/images/components/comp-positioner.png" width="44"> | **Spline Positioner** | Pins an object to a fixed point on the spline. |
+| <img src=".github/images/components/comp-projector.png" width="44"> | **Spline Projector** | Snaps an object to the nearest point on the spline, and reports how far along it is. |
+| <img src=".github/images/components/comp-trigger.png" width="44"> | **Spline Trigger** | Fires events when a follower passes a point. Checkpoints, laps, gates. |
+| <img src=".github/images/components/comp-object-controller.png" width="44"> | **Object Controller** | Scatters prefabs along the spline, with seeded randomness so the layout is reproducible. |
+| <img src=".github/images/components/comp-box-collider-gen.png" width="44"> | **Box Collider Generator** | A chain of box colliders along the spline. Cheaper than a mesh collider. |
+| <img src=".github/images/components/comp-edge-collider-gen.png" width="44"> | **Edge Collider 2D Generator** | Physics for 2D ground and rails. |
+| <img src=".github/images/components/comp-length-calculator.png" width="44"> | **Length Calculator** | Measures the spline and raises events when its length crosses a threshold. |
 
 ## Editing
 
@@ -148,8 +148,12 @@ Watch the repository to hear when it lands.
 
 ## License
 
-**Free to use**, in personal and commercial projects alike, with no royalty. You may
-extend it and build add-ons on top of it, including ones you sell.
+**Free to use**, in personal and commercial projects alike, with no royalty. Ship your
+game, paid or free, on any platform. Extend the package however you like, and share an
+extension for free if you want to.
 
-You may **not** redistribute the package itself, or use its source as the basis of a
-competing spline product. Full terms in [LICENSE.md](LICENSE.md).
+What you may **not** do is sell it, or sell tools built on it: TBSplineS itself may not
+be redistributed, and add-ons, plugins or tool packs that depend on it may not be put
+up for sale. Your game is yours to sell; developer tools built on TBSplineS are not.
+
+Full terms in [LICENSE.md](LICENSE.md).
