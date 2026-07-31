@@ -1,38 +1,111 @@
 name: Release
 
+# Releases are published by hand, never automatically. Actions → Release → Run workflow,
+# pick the branch in "Use workflow from", then choose how it should go out.
 on:
-  push:
-    tags: ['v*']
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to release. Leave empty to use the version in package.json.'
+        required: false
+        type: string
+      prerelease:
+        description: 'Mark as a pre-release (recommended while the version is 0.x).'
+        required: false
+        default: true
+        type: boolean
+      draft:
+        description: 'Create as a draft, so nothing is public until you press Publish.'
+        required: false
+        default: false
+        type: boolean
+      tag:
+        description: 'Create and push the git tag. Turn off to re-run against a tag that already exists.'
+        required: false
+        default: true
+        type: boolean
 
 permissions:
   contents: write
 
 jobs:
   release:
-    name: Publish release
+    name: Build and publish
     runs-on: ubuntu-latest
+
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - uses: actions/setup-node@v4
         with:
           node-version: '20'
 
-      - name: Validate package and match version to tag
-        run: node Tools/validate-package.mjs "${GITHUB_REF_NAME}"
+      - name: Resolve version
+        id: resolve
+        run: |
+          MANIFEST=$(node -p "require('./package.json').version")
+          INPUT="${{ inputs.version }}"
+          VERSION="${INPUT:-$MANIFEST}"
+          VERSION="${VERSION#v}"
+
+          if [ "$VERSION" != "$MANIFEST" ]; then
+            echo "::error::Requested $VERSION but package.json says $MANIFEST. Bump the manifest and the changelog first, then release."
+            exit 1
+          fi
+
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "tag=v$VERSION" >> "$GITHUB_OUTPUT"
+          echo "Releasing v$VERSION from ${GITHUB_REF_NAME} @ ${GITHUB_SHA:0:7}" >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Check the tag is free
+        if: inputs.tag
+        run: |
+          if git ls-remote --exit-code --tags origin "refs/tags/${{ steps.resolve.outputs.tag }}" >/dev/null 2>&1; then
+            echo "::error::Tag ${{ steps.resolve.outputs.tag }} already exists. Bump the version, or re-run with 'tag' turned off."
+            exit 1
+          fi
+
+      - name: Validate package
+        run: node Tools/validate-package.mjs "${{ steps.resolve.outputs.tag }}"
+
+      - name: Read release notes from the changelog
+        run: |
+          {
+            node Tools/changelog-section.mjs "${{ steps.resolve.outputs.version }}"
+            echo
+            echo '---'
+            echo
+            echo '**Install** — Package Manager → + → Install package from git URL:'
+            echo
+            echo '```'
+            echo "https://github.com/${GITHUB_REPOSITORY}.git#${{ steps.resolve.outputs.tag }}"
+            echo '```'
+            echo
+            echo 'Or download the attached `.unitypackage` and import it into `Assets/`.'
+          } > release-notes.md
 
       - name: Build unitypackage
         run: node Tools/build-unitypackage.mjs
 
-      - name: Publish
+      - name: Tag the commit
+        if: inputs.tag
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git tag -a "${{ steps.resolve.outputs.tag }}" -m "TBSplineS ${{ steps.resolve.outputs.tag }}"
+          git push origin "${{ steps.resolve.outputs.tag }}"
+
+      - name: Publish release
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh release create "${GITHUB_REF_NAME}" Build/*.unitypackage \
-            --title "TBSplineS ${GITHUB_REF_NAME}" \
-            --notes "Install via Package Manager:
-          \`https://github.com/${GITHUB_REPOSITORY}.git#${GITHUB_REF_NAME}\`
+          gh release create "${{ steps.resolve.outputs.tag }}" Build/*.unitypackage \
+            --title "TBSplineS ${{ steps.resolve.outputs.tag }}" \
+            --notes-file release-notes.md \
+            --target "${GITHUB_SHA}" \
+            ${{ inputs.prerelease && '--prerelease' || '' }} \
+            ${{ inputs.draft && '--draft' || '' }}
 
-          Or download the attached \`.unitypackage\` and import it into \`Assets/\`.
-
-          See [CHANGELOG.md](https://github.com/${GITHUB_REPOSITORY}/blob/${GITHUB_REF_NAME}/CHANGELOG.md) for what changed."
+          echo "Published ${{ steps.resolve.outputs.tag }}" >> "$GITHUB_STEP_SUMMARY"
