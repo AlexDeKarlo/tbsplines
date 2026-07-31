@@ -5,7 +5,7 @@
 <br>
 
 [![Unity 2022.3+](https://img.shields.io/badge/Unity-2022.3%20LTS%20%E2%80%93%20Unity%206-23262D?style=flat-square&logo=unity&logoColor=white)](https://unity.com)
-[![Version](https://img.shields.io/badge/version-0.1.0-4C8FF0?style=flat-square)](CHANGELOG.md)
+[![Version](https://img.shields.io/github/v/release/AlexDeKarlo/tbsplines?include_prereleases&sort=semver&style=flat-square&label=version&color=4C8FF0)](../../releases)
 [![License](https://img.shields.io/badge/license-free%20to%20use-4C8FF0?style=flat-square)](LICENSE.md)
 [![CI](https://img.shields.io/github/actions/workflow/status/AlexDeKarlo/tbsplines/ci.yml?branch=master&style=flat-square&label=CI)](../../actions)
 [![Dependencies](https://img.shields.io/badge/dependencies-none-4C8FF0?style=flat-square)](package.json)
@@ -29,7 +29,7 @@ the same on Built-in, URP and HDRP.
 **Package Manager → + → Install package from git URL:**
 
 ```
-https://github.com/AlexDeKarlo/tbsplines.git#v0.1.0
+https://github.com/AlexDeKarlo/tbsplines.git
 ```
 
 **Or in `Packages/manifest.json`:**
@@ -37,13 +37,18 @@ https://github.com/AlexDeKarlo/tbsplines.git#v0.1.0
 ```json
 {
   "dependencies": {
-    "com.thebestsplinesolution.core": "https://github.com/AlexDeKarlo/tbsplines.git#v0.1.0"
+    "com.thebestsplinesolution.core": "https://github.com/AlexDeKarlo/tbsplines.git"
   }
 }
 ```
 
-Pinning the tag keeps a future release from changing your project underneath you. Drop
-`#v0.1.0` to track `master` instead.
+That installs the current state of the package. Unity records the exact commit in
+`Packages/packages-lock.json`, so your project stays put until you ask for a newer one —
+remove the entry from that file, or re-add the package, to pull the latest again.
+
+Need a version that can never move? Append a tag, for example
+`https://github.com/AlexDeKarlo/tbsplines.git#v0.1.1`. See the
+[releases](../../releases) for the list.
 
 Prefer a plain folder in `Assets/`? Download the `.unitypackage` from the
 [latest release](../../releases).
