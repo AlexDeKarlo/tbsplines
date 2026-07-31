@@ -27,6 +27,7 @@ on:
 
 permissions:
   contents: write
+  packages: write
 
 jobs:
   release:
@@ -51,7 +52,7 @@ jobs:
           VERSION="${VERSION#v}"
 
           if [ "$VERSION" != "$MANIFEST" ]; then
-            echo "::error::Requested $VERSION but package.json says $MANIFEST. Bump the manifest and the changelog first, then release."
+            echo "::error::Requested $VERSION but package.json says $MANIFEST. Bump the manifest first, then release."
             exit 1
           fi
 
@@ -70,22 +71,6 @@ jobs:
       - name: Validate package
         run: node Tools/validate-package.mjs "${{ steps.resolve.outputs.tag }}"
 
-      - name: Read release notes from the changelog
-        run: |
-          {
-            node Tools/changelog-section.mjs "${{ steps.resolve.outputs.version }}"
-            echo
-            echo '---'
-            echo
-            echo '**Install** — Package Manager → + → Install package from git URL:'
-            echo
-            echo '```'
-            echo "https://github.com/${GITHUB_REPOSITORY}.git#${{ steps.resolve.outputs.tag }}"
-            echo '```'
-            echo
-            echo 'Or download the attached `.unitypackage` and import it into `Assets/`.'
-          } > release-notes.md
-
       - name: Build unitypackage
         run: node Tools/build-unitypackage.mjs
 
@@ -102,10 +87,36 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           gh release create "${{ steps.resolve.outputs.tag }}" Build/*.unitypackage \
-            --title "TBSplineS ${{ steps.resolve.outputs.tag }}" \
-            --notes-file release-notes.md \
+            --title "${{ steps.resolve.outputs.tag }}" \
+            --notes "" \
             --target "${GITHUB_SHA}" \
             ${{ inputs.prerelease && '--prerelease' || '' }} \
             ${{ inputs.draft && '--draft' || '' }}
 
-          echo "Published ${{ steps.resolve.outputs.tag }}" >> "$GITHUB_STEP_SUMMARY"
+          echo "Published release ${{ steps.resolve.outputs.tag }}" >> "$GITHUB_STEP_SUMMARY"
+
+      # Publishing to the GitHub Packages npm registry is what puts the package in the
+      # repository's Packages sidebar. The owner scope goes in the registry URL, not in
+      # the package name, so the name stays a valid Unity package id.
+      - name: Configure the GitHub Packages registry
+        run: |
+          cat > .npmrc <<'EOF'
+          registry=https://npm.pkg.github.com/@alexdekarlo
+          //npm.pkg.github.com/:_authToken=${NODE_AUTH_TOKEN}
+          //npm.pkg.github.com/@alexdekarlo/:_authToken=${NODE_AUTH_TOKEN}
+          always-auth=true
+          EOF
+
+      - name: Publish package
+        env:
+          NODE_AUTH_TOKEN: ${{ github.token }}
+        run: |
+          NAME=$(node -p "require('./package.json').name")
+          VERSION="${{ steps.resolve.outputs.version }}"
+
+          if npm view "$NAME@$VERSION" version >/dev/null 2>&1; then
+            echo "::notice::$NAME@$VERSION is already published, skipping."
+          else
+            npm publish
+            echo "Published package $NAME@$VERSION" >> "$GITHUB_STEP_SUMMARY"
+          fi

@@ -5,11 +5,19 @@
   "description": "A spline system for Unity with a scene-first editor. Draw splines directly in the scene view, then drive meshes, colliders, followers and triggers along them. Roads, paths, tubes, fences, rails and surfaces, with junctions and branching. No render pipeline dependency: works with Built-in, URP and HDRP.",
   "unity": "2022.3",
   "documentationUrl": "https://alexdekarlo.github.io/tbsplines",
-  "changelogUrl": "https://github.com/AlexDeKarlo/tbsplines/blob/main/CHANGELOG.md",
-  "licensesUrl": "https://github.com/AlexDeKarlo/tbsplines/blob/main/LICENSE.md",
+  "changelogUrl": "https://github.com/AlexDeKarlo/tbsplines/blob/master/CHANGELOG.md",
+  "licensesUrl": "https://github.com/AlexDeKarlo/tbsplines/blob/master/LICENSE.md",
+  "license": "SEE LICENSE IN LICENSE.md",
   "author": {
     "name": "AlexDeKarlo",
     "url": "https://github.com/AlexDeKarlo"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/AlexDeKarlo/tbsplines.git"
+  },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com/@alexdekarlo"
   },
   "keywords": [
     "spline",

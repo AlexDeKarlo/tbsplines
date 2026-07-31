@@ -1,0 +1,8 @@
+# npm publish packs the repository root, but the package is only the Unity content
+# plus the images the README points at, so the package page renders properly.
+# Samples~ stays: the Package Manager needs it to offer the samples.
+
+.github/workflows/
+Tools/
+Build/
+*.unitypackage
