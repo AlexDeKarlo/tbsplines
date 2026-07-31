@@ -1,0 +1,38 @@
+name: Release
+
+on:
+  push:
+    tags: ['v*']
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    name: Publish release
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Validate package and match version to tag
+        run: node Tools/validate-package.mjs "${GITHUB_REF_NAME}"
+
+      - name: Build unitypackage
+        run: node Tools/build-unitypackage.mjs
+
+      - name: Publish
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "${GITHUB_REF_NAME}" Build/*.unitypackage \
+            --title "TBSplineS ${GITHUB_REF_NAME}" \
+            --notes "Install via Package Manager:
+          \`https://github.com/${GITHUB_REPOSITORY}.git#${GITHUB_REF_NAME}\`
+
+          Or download the attached \`.unitypackage\` and import it into \`Assets/\`.
+
+          See [CHANGELOG.md](https://github.com/${GITHUB_REPOSITORY}/blob/${GITHUB_REF_NAME}/CHANGELOG.md) for what changed."

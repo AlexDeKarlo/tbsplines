@@ -1,0 +1,40 @@
+# This repository is a Unity package, not a Unity project. Its sources are committed
+# as-is with their .meta files, so that asset GUIDs stay stable for everyone who has
+# already installed the package.
+
+# Release output
+/Build/
+*.unitypackage
+
+# Unity leftovers, in case the package is opened inside a project
+/Library/
+/Temp/
+/Logs/
+/obj/
+*.csproj
+*.unityproj
+*.sln
+*.suo
+*.user
+*.userprefs
+*.pidb
+*.booproj
+*.svd
+*.pdb
+*.mdb
+*.opendb
+*.VC.db
+*.log
+sysinfo.txt
+
+# OS and editor cruft
+.DS_Store
+Thumbs.db
+.vs/
+.gradle/
+.idea/
+.vscode/
+.consulo/
+
+# Node, used by the release tooling
+node_modules/

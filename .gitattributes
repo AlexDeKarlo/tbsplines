@@ -1,0 +1,32 @@
+# Text files are normalized to LF in the repository. Unity reads either ending, and
+# this keeps diffs of .meta and YAML assets readable.
+* text=auto
+
+*.cs        text diff=csharp
+*.meta      text eol=lf
+*.asmdef    text eol=lf
+*.json      text eol=lf
+*.md        text eol=lf
+*.yml       text eol=lf
+*.mjs       text eol=lf
+
+# Unity YAML assets. Marked as text so merges are possible, but they need Unity's
+# smart merge tool to be resolved meaningfully.
+*.unity     text merge=unityyamlmerge eol=lf
+*.prefab    text merge=unityyamlmerge eol=lf
+*.mat       text merge=unityyamlmerge eol=lf
+*.asset     text merge=unityyamlmerge eol=lf
+
+# Binary. Never touch these, and do not try to diff them.
+*.png       binary
+*.jpg       binary
+*.jpeg      binary
+*.tga       binary
+*.psd       binary
+*.fbx       binary
+*.wav       binary
+*.mp3       binary
+*.ttf       binary
+*.otf       binary
+*.dll       binary
+*.unitypackage binary

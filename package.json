@@ -1,0 +1,30 @@
+{
+  "name": "com.thebestsplinesolution.core",
+  "version": "0.1.0",
+  "displayName": "TBSplineS",
+  "description": "A spline system for Unity with a scene-first editor. Draw splines directly in the scene view, then drive meshes, colliders, followers and triggers along them. Roads, paths, tubes, fences, rails and surfaces, with junctions and branching. No render pipeline dependency: works with Built-in, URP and HDRP.",
+  "unity": "2022.3",
+  "documentationUrl": "https://alexdekarlo.github.io/tbsplines",
+  "changelogUrl": "https://github.com/AlexDeKarlo/tbsplines/blob/main/CHANGELOG.md",
+  "licensesUrl": "https://github.com/AlexDeKarlo/tbsplines/blob/main/LICENSE.md",
+  "author": {
+    "name": "AlexDeKarlo",
+    "url": "https://github.com/AlexDeKarlo"
+  },
+  "keywords": [
+    "spline",
+    "curve",
+    "bezier",
+    "path",
+    "road",
+    "mesh",
+    "editor"
+  ],
+  "samples": [
+    {
+      "displayName": "Examples",
+      "description": "Nine annotated scenes in one: road, ring, fork, mesh, fence, modifiers, surface, physics and utility.",
+      "path": "Samples~/Examples"
+    }
+  ]
+}
