@@ -33,6 +33,28 @@ for (const source of SOURCE_ROOTS) {
   else check(dir)
 }
 
+// Files at the package root need metas too. Without them Unity logs
+// "has no meta file, but it's in an immutable folder" once per file, every import.
+for (const name of ['package.json', 'README.md', 'CHANGELOG.md', 'LICENSE.md']) {
+  if (!existsSync(join(root, `${name}.meta`))) problems.push(`root file has no meta: ${name}`)
+}
+
+// A menu path with no known parent creates a top-level menu in the user's menu bar,
+// which the Asset Store guidelines forbid and users find rude.
+const ALLOWED_MENU_ROOTS = ['GameObject/', 'Assets/', 'Window/', 'Tools/', 'Component/', 'Edit/', 'Help/', 'CONTEXT/']
+for (const dir of ['Runtime', 'Editor']) {
+  const dirPath = join(root, dir)
+  if (!existsSync(dirPath)) continue
+  for (const name of readdirSync(dirPath)) {
+    if (!name.endsWith('.cs')) continue
+    const source = readFileSync(join(dirPath, name), 'utf8')
+    for (const match of source.matchAll(/MenuItem\(\s*"([^"]+)"/g)) {
+      if (!ALLOWED_MENU_ROOTS.some(rootMenu => match[1].startsWith(rootMenu)))
+        problems.push(`MenuItem "${match[1]}" in ${dir}/${name} would create a top-level menu`)
+    }
+  }
+}
+
 const manifest = JSON.parse(readFileSync(join(root, 'package.json'), 'utf8'))
 if (!/^\d+\.\d+\.\d+(-[0-9A-Za-z.-]+)?$/.test(manifest.version))
   problems.push(`package.json version is not semver: ${manifest.version}`)

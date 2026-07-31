@@ -6,6 +6,20 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 package adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html). While
 the major version is `0` the public API may still change between minor releases.
 
+## [0.1.1] - 2026-08-01
+
+### Fixed
+
+- Importing the package no longer logs "has no meta file, but it's in an immutable
+  folder" for `package.json`, `README.md`, `CHANGELOG.md` and `LICENSE.md`. Those files
+  now ship with their own meta files, as Unity's own packages do.
+
+### Removed
+
+- The `TBSplineS/Dev` menu. It held two authoring tools that were never meant to reach
+  users, and it added a top-level entry to the menu bar. Component icons are unaffected:
+  they are stored in the script meta files, not assigned by that tool.
+
 ## [0.1.0] - 2026-08-01
 
 First public release, for alpha testing.
@@ -30,4 +44,5 @@ First public release, for alpha testing.
 - XML documentation across the entire public API.
 - Examples sample with nine annotated scenes.
 
+[0.1.1]: https://github.com/AlexDeKarlo/tbsplines/releases/tag/v0.1.1
 [0.1.0]: https://github.com/AlexDeKarlo/tbsplines/releases/tag/v0.1.0
