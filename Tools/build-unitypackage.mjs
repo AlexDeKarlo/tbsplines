@@ -12,11 +12,24 @@ const ROOTS = [
   { from: 'Samples~/Examples', to: 'Assets/TBSplineS/Examples' },
 ]
 
+const STORE = process.argv.includes('--store')
+
 const LOOSE = [
   { from: 'README.md', to: 'Assets/TBSplineS/README.md' },
   { from: 'CHANGELOG.md', to: 'Assets/TBSplineS/CHANGELOG.md' },
-  { from: 'LICENSE.md', to: 'Assets/TBSplineS/LICENSE.md' },
 ]
+
+// On the Asset Store the terms come from Unity's End User License Agreement, so the
+// repository's own licence is replaced rather than shipped alongside it.
+const STORE_LICENSE = `TBSplineS
+
+Distributed through the Unity Asset Store under the Asset Store
+End User License Agreement: https://unity.com/legal/as-terms
+
+Copyright (c) 2026 AlexDeKarlo. All rights reserved.
+
+Source, issues and updates: https://github.com/AlexDeKarlo/tbsplines
+`
 
 function guidFor(assetPath) {
   return createHash('md5').update(`com.thebestsplinesolution.core:${assetPath}`).digest('hex')
@@ -43,13 +56,13 @@ function synthesizeMeta(assetPath, isFolder) {
 
 const entries = []
 
-function addEntry(diskPath, assetPath, isFolder) {
+function addEntry(diskPath, assetPath, isFolder, content) {
   const meta = readMeta(`${diskPath}.meta`) ?? synthesizeMeta(assetPath, isFolder)
   entries.push({
     guid: meta.guid,
     meta: meta.text,
     pathname: assetPath,
-    data: isFolder ? null : readFileSync(diskPath),
+    data: isFolder ? null : content ?? readFileSync(diskPath),
   })
 }
 
@@ -66,6 +79,9 @@ function walk(diskDir, assetDir) {
 
 for (const { from, to } of ROOTS) walk(join(root, from), to)
 for (const { from, to } of LOOSE) addEntry(join(root, from), to, false)
+
+if (STORE) addEntry(join(root, 'LICENSE.md'), 'Assets/TBSplineS/LICENSE.txt', false, Buffer.from(STORE_LICENSE, 'utf8'))
+else addEntry(join(root, 'LICENSE.md'), 'Assets/TBSplineS/LICENSE.md', false)
 
 function tarHeader(name, size) {
   const header = Buffer.alloc(512)
@@ -106,7 +122,7 @@ chunks.push(Buffer.alloc(1024))
 const version = JSON.parse(readFileSync(join(root, 'package.json'), 'utf8')).version
 const outDir = join(root, 'Build')
 mkdirSync(outDir, { recursive: true })
-const outPath = join(outDir, `TBSplineS-${version}.unitypackage`)
+const outPath = join(outDir, `TBSplineS-${version}${STORE ? '-store' : ''}.unitypackage`)
 writeFileSync(outPath, gzipSync(Buffer.concat(chunks), { level: 9 }))
 
 console.log(`${outPath}  (${entries.length} assets, ${(statSync(outPath).size / 1024).toFixed(0)} KB)`)
