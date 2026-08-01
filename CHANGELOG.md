@@ -6,6 +6,19 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 package adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html). While
 the major version is `0` the public API may still change between minor releases.
 
+## [0.1.2] - 2026-08-01
+
+### Changed
+
+- The Move, Rotate and Scale shortcuts now need Ctrl: `Ctrl+G`, `Ctrl+R` and `Ctrl+E`.
+  Bare letters fired while typing in the scene view and collided with Unity's own
+  tool keys. Existing bindings are migrated once; rebind any of them in Settings.
+
+### Fixed
+
+- Height guides — the dashed lines from each point down to the grid — are on by
+  default again, on new Spline Computers and on existing ones.
+
 ## [0.1.1] - 2026-08-01
 
 ### Fixed
@@ -44,5 +57,6 @@ First public release, for alpha testing.
 - XML documentation across the entire public API.
 - Examples sample with nine annotated scenes.
 
+[0.1.2]: https://github.com/AlexDeKarlo/tbsplines/releases/tag/v0.1.2
 [0.1.1]: https://github.com/AlexDeKarlo/tbsplines/releases/tag/v0.1.1
 [0.1.0]: https://github.com/AlexDeKarlo/tbsplines/releases/tag/v0.1.0

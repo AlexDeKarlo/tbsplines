@@ -20,7 +20,8 @@ namespace TBSplineS
         [SerializeField] int _nextJunctionId = 1;
         [SerializeField] float _editorGridHeight;
         [SerializeField] float _editorGridSize = 1f;
-        [SerializeField] bool _editorShowHeightGuides;
+        [SerializeField] bool _editorShowHeightGuides = true;
+        [SerializeField] int _editorDataVersion = 1;
         [SerializeField] bool _editorShowNumbers = true;
         [SerializeField] bool _editorRenderAll;
 
@@ -752,6 +753,11 @@ namespace TBSplineS
 
         void OnValidate()
         {
+            if (_editorDataVersion < 1)
+            {
+                _editorDataVersion = 1;
+                _editorShowHeightGuides = true;
+            }
             EnsureIds();
             for (int i = 0; i < _splines.Count; i++) _splines[i]?.OnExternalMutation();
             ValidateJunctions();

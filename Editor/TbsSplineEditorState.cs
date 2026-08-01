@@ -391,14 +391,25 @@ namespace TBSplineS.Editor
             LastScale = Vector3.one;
         }
 
+        const int ShortcutSchema = 2;
+
+        [InitializeOnLoadMethod]
+        static void MigrateShortcuts()
+        {
+            if (EditorPrefs.GetInt("TBSplineS.Sc.Schema", 1) >= ShortcutSchema) return;
+            foreach (string action in new[] { "Move", "Rotate", "Scale" })
+                EditorPrefs.DeleteKey("TBSplineS.Sc." + action);
+            EditorPrefs.SetInt("TBSplineS.Sc.Schema", ShortcutSchema);
+        }
+
         public static string GetShortcut(string action)
         {
             string def;
             switch (action)
             {
-                case "Move": def = "G"; break;
-                case "Rotate": def = "R"; break;
-                case "Scale": def = "S"; break;
+                case "Move": def = "Ctrl+G"; break;
+                case "Rotate": def = "Ctrl+R"; break;
+                case "Scale": def = "Ctrl+E"; break;
                 case "Add": def = "Shift+A"; break;
                 case "New": def = "Shift+A"; break;
                 case "Mode": def = "Tab"; break;

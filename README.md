@@ -4,11 +4,8 @@
 
 <br>
 
-[![Unity 2022.3+](https://img.shields.io/badge/Unity-2022.3%20LTS%20%E2%80%93%20Unity%206-23262D?style=flat-square&logo=unity&logoColor=white)](https://unity.com)
 [![Version](https://img.shields.io/github/v/release/AlexDeKarlo/tbsplines?include_prereleases&sort=semver&style=flat-square&label=version&color=4C8FF0)](../../releases)
-[![License](https://img.shields.io/badge/license-free%20to%20use-4C8FF0?style=flat-square)](LICENSE.md)
-[![CI](https://img.shields.io/github/actions/workflow/status/AlexDeKarlo/tbsplines/ci.yml?branch=master&style=flat-square&label=CI)](../../actions)
-[![Dependencies](https://img.shields.io/badge/dependencies-none-4C8FF0?style=flat-square)](package.json)
+[![Unity 2022.3+](https://img.shields.io/badge/Unity-2022.3%20LTS%20%E2%80%93%20Unity%206-23262D?style=flat-square&logo=unity&logoColor=white)](https://unity.com)
 [![Asset Store](https://img.shields.io/badge/Asset%20Store-coming%20soon-59636E?style=flat-square)](#asset-store)
 
 **Draw splines in the scene view. Build roads, paths, tubes, fences and surfaces along them.**
