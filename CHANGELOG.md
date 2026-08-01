@@ -6,6 +6,23 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 package adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html). While
 the major version is `0` the public API may still change between minor releases.
 
+## [1.0.0] - 2026-08-01
+
+First stable release.
+
+### Changed
+
+- The demo scene is an optional sample. Installing through the Package Manager brings in
+  code only; press Import next to the Examples sample to add the scene, and it lands in
+  your own `Assets/Samples` folder where you can edit or delete it. The `.unitypackage`
+  attached to each release still ships the scene unpacked.
+
+### Fixed
+
+- The demo scene no longer carries orphaned objects left behind by the generators.
+  Earlier releases shipped spawned objects whose marker component could not be
+  resolved, which showed up as missing components on import.
+
 ## [0.1.2] - 2026-08-01
 
 ### Changed
@@ -57,6 +74,7 @@ First public release, for alpha testing.
 - XML documentation across the entire public API.
 - Examples sample with nine annotated scenes.
 
+[1.0.0]: https://github.com/AlexDeKarlo/tbsplines/releases/tag/v1.0.0
 [0.1.2]: https://github.com/AlexDeKarlo/tbsplines/releases/tag/v0.1.2
 [0.1.1]: https://github.com/AlexDeKarlo/tbsplines/releases/tag/v0.1.1
 [0.1.0]: https://github.com/AlexDeKarlo/tbsplines/releases/tag/v0.1.0

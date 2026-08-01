@@ -59,9 +59,14 @@ Prefer a plain folder in `Assets/`? Download the `.unitypackage` from the
 4.  Add a Spline Follower to any object, point it at the computer
 ```
 
-Then import the **Examples** sample from the Package Manager: nine annotated scenes
-covering roads, rings, forks, meshes, fences, modifiers, surfaces, physics and utility
-components.
+Want to see it working first? Open the package in the Package Manager and press **Import**
+next to the **Examples** sample: nine annotated sections in one scene, covering roads,
+rings, forks, meshes, fences, modifiers, surfaces, physics and utility components. Nothing
+lands in your project until you ask for it, and the sample is a plain copy you can edit or
+delete freely.
+
+The `.unitypackage` attached to every [release](../../releases) has the same demo scene
+already unpacked, for projects that install by dropping a folder into `Assets/`.
 
 ## Components
 

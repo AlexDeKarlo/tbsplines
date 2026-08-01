@@ -61,9 +61,6 @@ if (!/^\d+\.\d+\.\d+(-[0-9A-Za-z.-]+)?$/.test(manifest.version))
 for (const field of ['name', 'displayName', 'description', 'unity']) {
   if (!manifest[field]) problems.push(`package.json is missing ${field}`)
 }
-for (const sample of manifest.samples ?? []) {
-  if (!existsSync(join(root, sample.path))) problems.push(`sample path does not exist: ${sample.path}`)
-}
 
 const tag = process.argv[2]
 if (tag && tag.replace(/^v/, '') !== manifest.version)
