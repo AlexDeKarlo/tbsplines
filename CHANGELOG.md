@@ -6,7 +6,7 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 package adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html). While
 the major version is `0` the public API may still change between minor releases.
 
-## [Unreleased]
+## [1.1.0] - 2026-11-06
 
 ### Fixed
 
@@ -98,6 +98,7 @@ First public release, for alpha testing.
 - XML documentation across the entire public API.
 - Examples sample with nine annotated scenes.
 
+[1.1.0]: https://github.com/AlexDeKarlo/tbsplines/releases/tag/v1.1.0
 [1.0.0]: https://github.com/AlexDeKarlo/tbsplines/releases/tag/v1.0.0
 [0.1.2]: https://github.com/AlexDeKarlo/tbsplines/releases/tag/v0.1.2
 [0.1.1]: https://github.com/AlexDeKarlo/tbsplines/releases/tag/v0.1.1
