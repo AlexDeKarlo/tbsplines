@@ -1,11 +1,14 @@
 using UnityEngine;
 
-public class TbsDemoToggle : MonoBehaviour
+namespace TBSplineS.Examples
 {
-    public GameObject Target;
-
-    public void Toggle()
+    public class TbsDemoToggle : MonoBehaviour
     {
-        if (Target != null) Target.SetActive(!Target.activeSelf);
+        public GameObject Target;
+
+        public void Toggle()
+        {
+            if (Target != null) Target.SetActive(!Target.activeSelf);
+        }
     }
 }

@@ -6,6 +6,19 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 package adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html). While
 the major version is `0` the public API may still change between minor releases.
 
+## [Unreleased]
+
+### Fixed
+
+- The Examples sample now renders in URP and HDRP as well as the Built-in pipeline, instead of
+  showing magenta materials. Its materials use a new `TBSplineS/Demo Lit` shader with a SubShader
+  for each pipeline. The spline components themselves were already pipeline-independent.
+
+### Changed
+
+- The example scripts live in the `TBSplineS.Examples` namespace. Code that refers to
+  `TbsDemoToggle` or the other demo components by name needs the namespace added.
+
 ## [1.0.0] - 2026-08-01
 
 First stable release.

@@ -1,24 +1,31 @@
 using UnityEngine;
 
-public class TbsDemoRespawn : MonoBehaviour
+namespace TBSplineS.Examples
 {
-    public float MinY = -3f;
-
-    Vector3 _start;
-    Rigidbody _body;
-
-    void Start()
+    public class TbsDemoRespawn : MonoBehaviour
     {
-        _start = transform.position;
-        _body = GetComponent<Rigidbody>();
-    }
+        public float MinY = -3f;
 
-    void Update()
-    {
-        if (transform.position.y >= MinY) return;
-        transform.position = _start;
-        if (_body == null) return;
-        _body.velocity = Vector3.zero;
-        _body.angularVelocity = Vector3.zero;
+        Vector3 _start;
+        Rigidbody _body;
+
+        void Start()
+        {
+            _start = transform.position;
+            _body = GetComponent<Rigidbody>();
+        }
+
+        void Update()
+        {
+            if (transform.position.y >= MinY) return;
+            transform.position = _start;
+            if (_body == null) return;
+#if UNITY_6000_0_OR_NEWER
+            _body.linearVelocity = Vector3.zero;
+#else
+            _body.velocity = Vector3.zero;
+#endif
+            _body.angularVelocity = Vector3.zero;
+        }
     }
 }

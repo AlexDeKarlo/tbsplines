@@ -14,22 +14,17 @@ const ROOTS = [
 
 const STORE = process.argv.includes('--store')
 
-const LOOSE = [
-  { from: 'README.md', to: 'Assets/TBSplineS/README.md' },
-  { from: 'CHANGELOG.md', to: 'Assets/TBSplineS/CHANGELOG.md' },
-]
-
-// On the Asset Store the terms come from Unity's End User License Agreement, so the
-// repository's own licence is replaced rather than shipped alongside it.
-const STORE_LICENSE = `TBSplineS
-
-Distributed through the Unity Asset Store under the Asset Store
-End User License Agreement: https://unity.com/legal/as-terms
-
-Copyright (c) 2026 AlexDeKarlo. All rights reserved.
-
-Source, issues and updates: https://github.com/AlexDeKarlo/tbsplines
-`
+// The --store variant carries no licence, README or changelog from this repository. On the Asset
+// Store the End User License Agreement is the only licence allowed, and a package that ships other
+// licence text or points at this public repository is rejected (independent licence, third-party
+// open source). The package that is actually uploaded is built by the development project's
+// Tools/release/build-store-package.mjs, which adds its own store README.
+const LOOSE = STORE
+  ? []
+  : [
+      { from: 'README.md', to: 'Assets/TBSplineS/README.md' },
+      { from: 'CHANGELOG.md', to: 'Assets/TBSplineS/CHANGELOG.md' },
+    ]
 
 function guidFor(assetPath) {
   return createHash('md5').update(`com.thebestsplinesolution.core:${assetPath}`).digest('hex')
@@ -80,8 +75,7 @@ function walk(diskDir, assetDir) {
 for (const { from, to } of ROOTS) walk(join(root, from), to)
 for (const { from, to } of LOOSE) addEntry(join(root, from), to, false)
 
-if (STORE) addEntry(join(root, 'LICENSE.md'), 'Assets/TBSplineS/LICENSE.txt', false, Buffer.from(STORE_LICENSE, 'utf8'))
-else addEntry(join(root, 'LICENSE.md'), 'Assets/TBSplineS/LICENSE.md', false)
+if (!STORE) addEntry(join(root, 'LICENSE.md'), 'Assets/TBSplineS/LICENSE.md', false)
 
 function tarHeader(name, size) {
   const header = Buffer.alloc(512)

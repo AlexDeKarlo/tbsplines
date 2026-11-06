@@ -55,6 +55,35 @@ for (const dir of ['Runtime', 'Editor']) {
   }
 }
 
+// Every type must sit inside a namespace, samples included: the Asset Store rejects packages with
+// global types (submission guidelines 2.5.a), and they collide with user code of the same name.
+// Scans brace depth with comments and string literals removed.
+function csFiles(dir) {
+  return readdirSync(dir).flatMap(name => {
+    const path = join(dir, name)
+    return statSync(path).isDirectory() ? csFiles(path) : name.endsWith('.cs') ? [path] : []
+  })
+}
+for (const source of SOURCE_ROOTS) {
+  const dir = join(root, source)
+  if (!existsSync(dir)) continue
+  for (const file of csFiles(dir)) {
+    const code = readFileSync(file, 'utf8')
+      .replace(/\/\*[\s\S]*?\*\//g, '').replace(/\/\/.*$/gm, '')
+      .replace(/@"(?:[^"]|"")*"/g, '""').replace(/\$?"(?:\\.|[^"\\\n])*"/g, '""').replace(/'(?:\\.|[^'\\\n])'/g, "''")
+    if (/^\s*namespace\s+[\w.]+\s*;/m.test(code)) continue
+    const stack = []
+    let pendingNamespace = false
+    for (const m of code.matchAll(/\bnamespace\s+[\w.]+|\b(class|struct|enum|interface|record|delegate)\s+\w+|[{}]/g)) {
+      if (m[0].startsWith('namespace')) pendingNamespace = true
+      else if (m[0] === '{') { stack.push(pendingNamespace); pendingNamespace = false }
+      else if (m[0] === '}') stack.pop()
+      else if (!stack.includes(true))
+        problems.push(`${m[0]} is not inside a namespace: ${posix.normalize(file.slice(root.length + 1).split('\\').join('/'))}`)
+    }
+  }
+}
+
 const manifest = JSON.parse(readFileSync(join(root, 'package.json'), 'utf8'))
 if (!/^\d+\.\d+\.\d+(-[0-9A-Za-z.-]+)?$/.test(manifest.version))
   problems.push(`package.json version is not semver: ${manifest.version}`)

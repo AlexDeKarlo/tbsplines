@@ -375,7 +375,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 69933724}
-        m_TargetAssemblyTypeName: TbsDemoToggle, Assembly-CSharp
+        m_TargetAssemblyTypeName: TBSplineS.Examples.TbsDemoToggle, Assembly-CSharp
         m_MethodName: Toggle
         m_Mode: 0
         m_Arguments:
