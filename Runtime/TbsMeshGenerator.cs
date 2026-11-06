@@ -228,12 +228,16 @@ namespace TBSplineS
         void MakeDoubleSided()
         {
             int baseVerts = _vertices.Count;
+            // Decided before the loop: once the first copy is added the counts no longer match.
+            bool normals = _normals.Count == baseVerts;
+            bool uv = _uv.Count == baseVerts;
+            bool colors = _colors.Count == baseVerts;
             for (int i = 0; i < baseVerts; i++)
             {
                 _vertices.Add(_vertices[i]);
-                if (_normals.Count == baseVerts) _normals.Add(-_normals[i]);
-                if (_uv.Count == baseVerts) _uv.Add(_uv[i]);
-                if (_colors.Count == baseVerts) _colors.Add(_colors[i]);
+                if (normals) _normals.Add(-_normals[i]);
+                if (uv) _uv.Add(_uv[i]);
+                if (colors) _colors.Add(_colors[i]);
             }
             int baseTris = _triangles.Count;
             for (int t = 0; t < baseTris; t += 3)

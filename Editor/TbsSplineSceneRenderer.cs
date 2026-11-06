@@ -9,13 +9,20 @@ namespace TBSplineS.Editor
     {
         const int RefineIterations = 16;
 
+        // Idle splines are drawn from every IdleStride-th sample: a quarter of the points, still through
+        // every knot (SamplesPerSegment is a multiple of it).
+        const int IdleStride = 4;
+
         static readonly Dictionary<int, TbsSplineSceneRenderer> Registry = new Dictionary<int, TbsSplineSceneRenderer>();
         static readonly List<int> StaleKeys = new List<int>();
         static readonly Color IdleOutlineColor = new Color(0.07f, 0.08f, 0.1f, 0.85f);
+        static readonly Plane[] FrustumPlanes = new Plane[6];
+        static Matrix4x4 _frustumMatrix;
 
         readonly TbsSplineComputer _computer;
 
         Vector3[][] _worldPolylines;
+        Vector3[][] _idlePolylines;
         Bounds[] _worldBounds;
         int[] _lastVersions;
         int[] _lastSampleCounts;
@@ -27,6 +34,20 @@ namespace TBSplineS.Editor
         {
             AssemblyReloadEvents.beforeAssemblyReload += DisposeAll;
             Undo.undoRedoPerformed += MarkAllDirty;
+            EditorApplication.hierarchyChanged += DropStale;
+        }
+
+        // Forgets renderers whose computer has been destroyed. This runs when the hierarchy changes rather
+        // than on every lookup: a sweep of the whole registry per drawn spline made each scene repaint
+        // quadratic in the number of splines.
+        static void DropStale()
+        {
+            StaleKeys.Clear();
+            foreach (KeyValuePair<int, TbsSplineSceneRenderer> pair in Registry)
+            {
+                if (pair.Value._computer == null) StaleKeys.Add(pair.Key);
+            }
+            for (int i = 0; i < StaleKeys.Count; i++) Registry.Remove(StaleKeys[i]);
         }
 
         static void MarkAllDirty()
@@ -41,17 +62,11 @@ namespace TBSplineS.Editor
 
         public static TbsSplineSceneRenderer Get(TbsSplineComputer computer)
         {
-            StaleKeys.Clear();
-            foreach (KeyValuePair<int, TbsSplineSceneRenderer> pair in Registry)
-            {
-                if (pair.Value._computer == null) StaleKeys.Add(pair.Key);
-            }
-            for (int i = 0; i < StaleKeys.Count; i++) Registry.Remove(StaleKeys[i]);
             int id = computer.GetInstanceID();
-            if (!Registry.TryGetValue(id, out TbsSplineSceneRenderer renderer))
+            if (!Registry.TryGetValue(id, out TbsSplineSceneRenderer renderer) || !ReferenceEquals(renderer._computer, computer))
             {
                 renderer = new TbsSplineSceneRenderer(computer);
-                Registry.Add(id, renderer);
+                Registry[id] = renderer;
             }
             return renderer;
         }
@@ -62,12 +77,35 @@ namespace TBSplineS.Editor
             Validate();
             int count = _lastSplineCount;
             if (count <= 0) return;
+
+            // Skip what the scene camera cannot see, and what lies beyond the idle draw distance.
+            Camera camera = Camera.current;
+            bool cull = camera != null;
+            float maxDistance = TbsSplineEditorState.IdleDrawDistance;
+            Vector3 eye = Vector3.zero;
+            if (cull)
+            {
+                Matrix4x4 viewProjection = camera.projectionMatrix * camera.worldToCameraMatrix;
+                if (viewProjection != _frustumMatrix)
+                {
+                    GeometryUtility.CalculateFrustumPlanes(viewProjection, FrustumPlanes);
+                    _frustumMatrix = viewProjection;
+                }
+                eye = camera.transform.position;
+            }
+
             Color previous = Handles.color;
             Color core = TbsSplineEditorState.IdleCurveColor;
             for (int i = 0; i < count; i++)
             {
-                Vector3[] polyline = _worldPolylines[i];
+                Vector3[] polyline = _idlePolylines[i];
                 if (polyline == null || polyline.Length < 2) continue;
+                if (cull)
+                {
+                    Bounds bounds = _worldBounds[i];
+                    if (maxDistance > 0f && bounds.SqrDistance(eye) > maxDistance * maxDistance) continue;
+                    if (!GeometryUtility.TestPlanesAABB(FrustumPlanes, bounds)) continue;
+                }
                 Handles.color = IdleOutlineColor;
                 Handles.DrawAAPolyLine(4.5f, polyline);
                 Handles.color = core;
@@ -242,6 +280,7 @@ namespace TBSplineS.Editor
                         else bounds.Encapsulate(world);
                     }
                     _worldPolylines[i] = polyline;
+                    _idlePolylines[i] = Decimate(polyline);
                     _worldBounds[i] = bounds;
                     _lastVersions[i] = version;
                     _lastSampleCounts[i] = samples;
@@ -256,17 +295,34 @@ namespace TBSplineS.Editor
         {
             if (_worldPolylines != null && _worldPolylines.Length == count) return;
             Vector3[][] polylines = new Vector3[count][];
+            Vector3[][] idle = new Vector3[count][];
             if (_worldPolylines != null)
             {
                 int copy = Mathf.Min(_worldPolylines.Length, count);
-                for (int i = 0; i < copy; i++) polylines[i] = _worldPolylines[i];
+                for (int i = 0; i < copy; i++)
+                {
+                    polylines[i] = _worldPolylines[i];
+                    idle[i] = _idlePolylines[i];
+                }
             }
             _worldPolylines = polylines;
+            _idlePolylines = idle;
             _worldBounds = new Bounds[count];
             _lastVersions = new int[count];
             _lastSampleCounts = new int[count];
         }
 
+
+        static Vector3[] Decimate(Vector3[] polyline)
+        {
+            int rows = TbsSplineCache.SamplesPerSegment + 1;
+            var points = new List<Vector3>(polyline.Length / IdleStride + 2);
+            for (int s = 0; s < polyline.Length; s++)
+            {
+                if ((s % rows) % IdleStride == 0 || s == polyline.Length - 1) points.Add(polyline[s]);
+            }
+            return points.ToArray();
+        }
 
         static bool BoundsVisible(Bounds bounds, bool hasCamera, Vector3 cameraPosition, Vector3 cameraForward, Vector2 guiPosition, float thresholdPixels)
         {

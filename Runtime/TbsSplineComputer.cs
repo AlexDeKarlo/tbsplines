@@ -90,20 +90,19 @@ namespace TBSplineS
         /// </summary>
         public void EnsureIds()
         {
+            // A set rather than a scan of the earlier splines: AddSpline runs this every time, and a computer
+            // filled with thousands of splines would otherwise take a cubic number of comparisons.
+            var seen = new HashSet<int>();
             for (int i = 0; i < _splines.Count; i++)
             {
                 TbsSpline spline = _splines[i];
                 if (spline == null) continue;
-                bool duplicate = false;
-                for (int j = 0; j < i; j++)
+                bool duplicate = !seen.Add(spline.Id);
+                if (spline.Id <= 0 || duplicate)
                 {
-                    if (_splines[j] != null && _splines[j].Id == spline.Id)
-                    {
-                        duplicate = true;
-                        break;
-                    }
+                    spline.Id = _nextSplineId++;
+                    seen.Add(spline.Id);
                 }
-                if (spline.Id <= 0 || duplicate) spline.Id = _nextSplineId++;
                 if (spline.Id >= _nextSplineId) _nextSplineId = spline.Id + 1;
             }
         }

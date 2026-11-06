@@ -25,6 +25,7 @@ namespace TBSplineS.Editor
         Rect _pivotBtnRect;
         Rect _modePopRect;
         Rect _gridPopRect;
+        Vector2 _gridScroll;
         Rect _orientPopRect;
         Rect _pivotPopRect;
 
@@ -88,7 +89,7 @@ namespace TBSplineS.Editor
             DrawDragInfo(sceneView);
             DrawMarquee();
             DrawModePopover(computer);
-            DrawGridPopover(computer);
+            DrawGridPopover(computer, sceneView);
             DrawOrientPopover();
             DrawPivotPopover(computer);
             DrawMenu();
@@ -540,17 +541,25 @@ namespace TBSplineS.Editor
             }
         }
 
-        void DrawGridPopover(TbsSplineComputer computer)
+        void DrawGridPopover(TbsSplineComputer computer, SceneView sceneView)
         {
             if (!_gridOpen) return;
             const float w = 252f;
             const float h = 10f
                 + 22f + 30f + 30f + 30f + 32f
                 + 10f + 22f + 30f + 32f
-                + 10f + 22f + 26f * 4f + 24f * 4f
+                + 10f + 22f + 26f * 5f + 24f * 4f
                 + 10f + 22f + 24f * 6f
                 + 8f;
-            _gridPopRect = new Rect(_gridBtnRect.xMax - w, _gridBtnRect.yMax + 6f, w, h);
+            // Kept inside the scene view: pushed in from the edges, and scrolled when it is taller than
+            // the room below the bar.
+            float viewW = sceneView.position.width;
+            float viewH = sceneView.position.height;
+            float x = Mathf.Clamp(_gridBtnRect.xMax - w, 4f, Mathf.Max(4f, viewW - w - 4f));
+            float y = _gridBtnRect.yMax + 6f;
+            float visibleH = Mathf.Min(h, Mathf.Max(120f, viewH - y - 30f));
+            bool scroll = visibleH < h;
+            _gridPopRect = new Rect(x, y, w, visibleH);
             Event e = Event.current;
             if (e.type == EventType.MouseDown && e.button == 0 &&
                 !_gridPopRect.Contains(e.mousePosition) && !_gridBtnRect.Contains(e.mousePosition))
@@ -561,6 +570,14 @@ namespace TBSplineS.Editor
             float px = _gridPopRect.x + 12f;
             float pw = w - 24f;
             float ry = _gridPopRect.y + 10f;
+            if (scroll)
+            {
+                const float bar = 14f;
+                _gridScroll = GUI.BeginScrollView(_gridPopRect, _gridScroll, new Rect(0f, 0f, w - bar, h), false, true);
+                px = 12f;
+                pw = w - bar - 24f;
+                ry = 10f;
+            }
 
             GUI.Label(new Rect(px, ry, pw, 14f), "GRID", TbsIcons.Caption); ry += 22f;
 
@@ -621,6 +638,8 @@ namespace TBSplineS.Editor
             ry = GizmoSlider(px, pw, ry, "Point", () => TbsSplineEditorState.PointSize, v => TbsSplineEditorState.PointSize = v, 0.3f, 3f);
             ry = GizmoSlider(px, pw, ry, "Line", () => TbsSplineEditorState.LineWidth, v => TbsSplineEditorState.LineWidth = v, 0.5f, 3f);
             ry = GizmoSlider(px, pw, ry, "Preview", () => TbsSplineEditorState.PreviewLineWidth, v => TbsSplineEditorState.PreviewLineWidth = v, 1f, 6f);
+            ry = DistanceSlider(px, pw, ry, "Draw within", "Splines you are not editing are drawn only this close to the camera. Off draws them at any distance.",
+                () => TbsSplineEditorState.IdleDrawDistance, v => TbsSplineEditorState.IdleDrawDistance = v, 2000f);
             ry = GizmoColor(px, pw, ry, "Idle", () => TbsSplineEditorState.IdleCurveColor, c => TbsSplineEditorState.IdleCurveColor = c);
             ry = GizmoColor(px, pw, ry, "Selected", () => TbsSplineEditorState.SelectedCurveColor, c => TbsSplineEditorState.SelectedCurveColor = c);
             ry = GizmoColor(px, pw, ry, "Hover", () => TbsSplineEditorState.HoverCurveColor, c => TbsSplineEditorState.HoverCurveColor = c);
@@ -635,6 +654,7 @@ namespace TBSplineS.Editor
             ShortcutRow(px, pw, ref ry, "Point tool", "Add");
             ShortcutRow(px, pw, ref ry, "New spline", "New");
             ShortcutRow(px, pw, ref ry, "Edit / Object", "Mode");
+            if (scroll) GUI.EndScrollView();
 
             if (_scCapture != null)
             {
@@ -660,6 +680,17 @@ namespace TBSplineS.Editor
             float v = GUI.HorizontalSlider(new Rect(px + 74f, ry + 5f, pw - 74f - 36f, 12f), get(), min, max);
             if (EditorGUI.EndChangeCheck()) set(Mathf.Round(v * 20f) / 20f);
             GUI.Label(new Rect(px + pw - 34f, ry + 1f, 34f, 16f), get().ToString("0.0"), TbsIcons.Mono);
+            return ry + 26f;
+        }
+
+        float DistanceSlider(float px, float pw, float ry, string label, string tip, Func<float> get, Action<float> set, float max)
+        {
+            GUI.Label(new Rect(px, ry + 1f, 72f, 16f), new GUIContent(label, tip), TbsIcons.InkLabel);
+            EditorGUI.BeginChangeCheck();
+            float v = GUI.HorizontalSlider(new Rect(px + 74f, ry + 5f, pw - 74f - 46f, 12f), get(), 0f, max);
+            if (EditorGUI.EndChangeCheck()) set(Mathf.Round(v / 25f) * 25f);
+            float d = get();
+            GUI.Label(new Rect(px + pw - 44f, ry + 1f, 44f, 16f), d <= 0f ? "off" : d.ToString("0") + " m", TbsIcons.Mono);
             return ry + 26f;
         }
 

@@ -13,6 +13,17 @@ the major version is `0` the public API may still change between minor releases.
 - The Examples sample now renders in URP and HDRP as well as the Built-in pipeline, instead of
   showing magenta materials. Its materials use a new `TBSplineS/Demo Lit` shader with a SubShader
   for each pipeline. The spline components themselves were already pipeline-independent.
+- The scene view no longer slows down on scenes with thousands of splines. Splines outside the
+  camera are skipped, and the ones you are not editing are drawn with fewer points.
+- Double Sided keeps the UVs and vertex colours on the back faces, so a textured double-sided
+  ribbon no longer loses its texture.
+- Adding a spline to a computer that already holds thousands of splines is no longer slow.
+- The settings popover stays inside a narrow scene view and scrolls when it does not fit.
+
+### Added
+
+- "Draw within" in Settings > Gizmo: splines you are not editing are drawn only within this
+  distance of the camera. Off by default.
 
 ### Changed
 

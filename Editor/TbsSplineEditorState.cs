@@ -309,6 +309,13 @@ namespace TBSplineS.Editor
         public static float PointSize { get { if (_pointSize < 0f) _pointSize = EditorPrefs.GetFloat("TBSplineS.PointSize", 1f); return _pointSize; } set { _pointSize = Mathf.Clamp(value, 0.3f, 4f); EditorPrefs.SetFloat("TBSplineS.PointSize", _pointSize); Changed?.Invoke(); } }
         public static float HandleSize { get { if (_handleSize < 0f) _handleSize = EditorPrefs.GetFloat("TBSplineS.HandleSize", 2.5f); return _handleSize; } set { _handleSize = Mathf.Clamp(value, 0.3f, 4f); EditorPrefs.SetFloat("TBSplineS.HandleSize", _handleSize); Changed?.Invoke(); } }
         public static float LineWidth { get { if (_lineWidth < 0f) _lineWidth = EditorPrefs.GetFloat("TBSplineS.LineWidth", 1f); return _lineWidth; } set { _lineWidth = Mathf.Clamp(value, 0.5f, 4f); EditorPrefs.SetFloat("TBSplineS.LineWidth", _lineWidth); Changed?.Invoke(); } }
+        static float _idleDistance = -1f;
+
+        /// <summary>
+        /// Splines that are not being edited are drawn only this close to the camera, in world units. Zero
+        /// draws them at any distance.
+        /// </summary>
+        public static float IdleDrawDistance { get { if (_idleDistance < 0f) _idleDistance = EditorPrefs.GetFloat("TBSplineS.IdleDistance", 0f); return _idleDistance; } set { _idleDistance = Mathf.Clamp(value, 0f, 5000f); EditorPrefs.SetFloat("TBSplineS.IdleDistance", _idleDistance); Changed?.Invoke(); } }
         public static float PreviewLineWidth { get { if (_previewWidth < 0f) _previewWidth = EditorPrefs.GetFloat("TBSplineS.PreviewWidth", 3f); return _previewWidth; } set { _previewWidth = Mathf.Clamp(value, 1f, 6f); EditorPrefs.SetFloat("TBSplineS.PreviewWidth", _previewWidth); Changed?.Invoke(); } }
 
         public static Color PreviewLineColor
